@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Sale Bill {{ sale.billno }}</title>
+</head>
+<body>
+    <h1>Sale Bill #{{ sale.billno }}</h1>
+    <p>Customer: {{ sale.name }} | Phone: {{ sale.phone }}</p>
+    <p>Date: {{ sale.time.date }}</p>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Stock</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Subtotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in sale_details %}
+            <tr>
+                <td>{{ item.stock.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+                <td>{{ item.quantity|floatformat:2|add:"0" * item.price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="3"><strong>Total</strong></td>
+                <td>{{ total_price }}</td>
+            </tr>
+        </tfoot>
+    </table>
+</body>
+</html>

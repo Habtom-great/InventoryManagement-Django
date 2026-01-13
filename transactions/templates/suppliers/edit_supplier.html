@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<style>
+ 
+ 
+    /* Improve visibility of input fields */
+input, textarea, select {
+    border-radius: 8px !important;
+    padding: 10px !important;
+    border: 1px solid #444 !important;   /* darker border */
+    width: 100%;
+    font-size: 13px !important;          /* slightly bigger but still small */
+    color: #000 !important;              /* black text for visibility */
+}
+
+/* Improve label visibility */
+label {
+    font-weight: 400;
+    color: #000 !important;
+    font-size: 13px !important;
+}
+
+/* Placeholder color (Name, Phone, Email) */
+input::placeholder {
+    color: #555 !important; /* darker placeholder */
+    opacity: 1 !important;
+}
+
+    .form-title {
+        font-weight: 200;
+        font-size: 1.7rem;
+        color: #0d0d0e;
+        border-bottom: 3px solid #080808;
+        display: inline-block;
+        padding-bottom: 5px;
+    }
+
+    .btn-custom {
+        padding: 10px 20px;
+        border-radius: 8px !important;
+        font-weight: 600;
+    }
+</style>
+
+<div class="container mt-4" style="max-width: 750px;">
+
+    <!-- Title -->
+    <h2 class="form-title mb-4">{{ title }}</h2>
+
+    <!-- Success Message -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>{{ message }}</strong>
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Form Errors -->
+    {% if form.errors %}
+        <div class="alert alert-danger shadow-sm">
+            <strong>Please correct the following errors:</strong>
+            <ul class="mt-2 mb-0">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+
+    <!-- Main Card -->
+    <div class="card shadow-lg p-4">
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <!-- Row 1 -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label>Name:</label>
+                    {{ form.name }}
+                </div>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>Phone No:</label>
+                    {{ form.phone }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>Email ID:</label>
+                    {{ form.email }}
+                </div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group mb-3">
+                <label>Address:</label>
+                {{ form.address }}
+            </div>
+
+            <!-- GSTIN & TIN -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label>GSTIN No:</label>
+                    {{ form.gstin }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label>TIN No:</label>
+                    {{ form.tin }}
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary btn-custom">
+                    <i class="fa fa-check"></i> {{ savebtn }}
+                </button>
+
+                {% if title == "New Supplier" %}
+                    <button type="reset" class="btn btn-warning btn-custom">
+                        <i class="fa fa-undo"></i> Reset
+                    </button>
+                {% endif %}
+
+                <a href="/transactions/suppliers_list" class="btn btn-secondary btn-custom">
+                    <i class="fa fa-times"></i> Cancel
+                </a>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

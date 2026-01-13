@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load humanize %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">
+            <i class="bi bi-truck"></i> Supplier Details
+        </h3>
+        <a href="{% url 'transactions:suppliers-list' %}" class="btn btn-outline-secondary btn-sm">
+            ← Back to Suppliers
+        </a>
+    </div>
+
+    <!-- Supplier Info Card -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">{{ object.name }}</h5>
+        </div>
+
+        <div class="card-body">
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h6 class="text-muted">Contact Information</h6>
+                        <p class="mb-1">
+                            <strong>Phone:</strong><br>
+                            {{ object.phone|default:"N/A" }}
+                        </p>
+                        <p class="mb-0">
+                            <strong>Email:</strong><br>
+                            {{ object.email|default:"N/A" }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h6 class="text-muted">Address</h6>
+                        <p class="mb-0">
+                            {{ object.address|default:"Not provided" }}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 bg-light rounded">
+                        <h6 class="text-muted">Status</h6>
+                        {% if object.is_deleted %}
+                            <span class="badge bg-danger">Inactive</span>
+                        {% else %}
+                            <span class="badge bg-success">Active</span>
+                        {% endif %}
+                        <p class="mt-2 mb-0">
+                            <small class="text-muted">
+                                Created on {{ object.created_at|date:"M d, Y" }}
+                            </small>
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Supplier Purchases -->
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Purchase History</h6>
+            <span class="badge bg-info">
+                {{ object.purchase_set.count }} Bills
+            </span>
+        </div>
+
+        <div class="card-body p-0">
+            {% if object.purchase_set.all %}
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Bill No</th>
+                            <th>Total Amount</th>
+                            <th>Date</th>
+                            <th class="text-end">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for purchase in object.purchase_set.all %}
+                        <tr>
+                            <td>{{ purchase.billno }}</td>
+                            <td>{{ purchase.get_total_price|intcomma }}</td>
+                            <td>{{ purchase.time.date }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'transactions:purchase-bill' purchase.billno %}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="p-4 text-center text-muted">
+                No purchases recorded for this supplier.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

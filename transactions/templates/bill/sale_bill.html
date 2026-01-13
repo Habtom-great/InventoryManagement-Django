@@ -1,0 +1,134 @@
+{% extends "bill/bill_base.html" %}
+
+{% load static %}
+{% load humanize %}
+{% block title %}SALES INVOICE - {{ bill.billno }}{% endblock %}
+
+{% block content %}
+<div style="font-family: Arial, sans-serif; color:#333; width:900px; margin:auto; background:#fff; padding:20px; border:1px solid #ccc; box-shadow:0px 0px 10px #ccc;">
+
+    <!-- Header -->
+    <div style="text-align:center; margin-bottom:20px;">
+        <h1 style="font-weight:bold; font-size:32px; color:#1a1a1a; margin:0;">SALES INVOICE</h1>
+        <hr style="border:none; border-top:2px solid #1a1a1a; margin:10px 0;">
+    </div>
+
+    <!-- Seller & Buyer / Invoice Info -->
+    <table style="width:100%; margin-bottom:20px; border-collapse:collapse;">
+        <tr>
+            <!-- Seller -->
+            <td style="width:48%; vertical-align:top; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                <strong style="font-size:16px;">Seller:</strong><br>
+                GIIMS<br>
+                Dealers in: Products<br>
+                Address: Bole Center Street, AA, OR 00882<br>
+                Email: gerarisaac@mail.com<br>
+                TIN/GSTIN: 123456789CASTR0
+            </td>
+
+            <!-- Buyer / Invoice -->
+            <td style="width:48%; vertical-align:top; padding:10px; border:1px solid #ccc; border-radius:5px; margin-left:4%;">
+                <strong style="font-size:16px;">Buyer / Consignee:</strong><br>
+                {{ bill.name|default:"-" }}<br>
+                Address: {{ bill.address|linebreaks|default:"-" }}<br><br>
+                <table style="width:100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="padding:5px; text-align:left;"><strong>Invoice No:</strong></td>
+                        <td style="padding:5px; text-align:right;">{{ bill.billno|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; text-align:left;"><strong>Date:</strong></td>
+                        <td style="padding:5px; text-align:right;">{{ bill.time|date:"M. d, Y" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; text-align:left;"><strong>PO No & Date:</strong></td>
+                        <td style="padding:5px; text-align:right;">{{ billdetails.po|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; text-align:left;"><strong>Destination:</strong></td>
+                        <td style="padding:5px; text-align:right;">{{ billdetails.destination|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding:5px; text-align:left;"><strong>TIN/GSTIN:</strong></td>
+                        <td style="padding:5px; text-align:right;">{{ bill.tin|default:"N/A" }}</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+
+    <!-- Items Table -->
+    <table style="width:100%; border-collapse:collapse; border:1px solid #ccc; margin-bottom:20px;">
+        <thead>
+            <tr style="background:#f2f2f2; text-align:center;">
+                <th style="border:1px solid #ccc; padding:8px;">Item ID</th>
+                <th style="border:1px solid #ccc; padding:8px;">Description</th>
+                <th style="border:1px solid #ccc; padding:8px;">UOM</th>
+                <th style="border:1px solid #ccc; padding:8px;">QTY</th>
+                <th style="border:1px solid #ccc; padding:8px;">UP (Birr)</th>
+                <th style="border:1px solid #ccc; padding:8px;">Total (Birr)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr style="text-align:center;">
+                <td style="border:1px solid #ccc; padding:6px;">{{ item.id }}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:left;">{{ item.stock.name|default:"-" }}</td>
+                <td style="border:1px solid #ccc; padding:6px;">-</td>
+                <td style="border:1px solid #ccc; padding:6px;">{{ item.quantity|intcomma }}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:right;">{{ item.perprice|floatformat:2|intcomma }}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:right;">{{ item.totalprice|floatformat:2|intcomma }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" style="border:1px solid #ccc; padding:10px; text-align:center;">No items found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Totals -->
+    <table style="width:50%; float:right; border-collapse:collapse; margin-bottom:30px;">
+        <tr>
+            <td style="padding:6px;"><strong>Subtotal:</strong></td>
+            <td style="padding:6px; text-align:right;">{{ subtotal|floatformat:2|intcomma }} Birr</td>
+        </tr>
+        <tr>
+            <td style="padding:6px;"><strong>VAT (15%):</strong></td>
+            <td style="padding:6px; text-align:right;">{{ vat|floatformat:2|intcomma }} Birr</td>
+        </tr>
+        <tr>
+            <td style="padding:6px;"><strong>Withholding (3%):</strong></td>
+            <td style="padding:6px; text-align:right;">{{ wh|floatformat:2|intcomma }} Birr</td>
+        </tr>
+        <tr style="background:#f2f2f2;">
+            <td style="padding:6px;"><strong>Net Total:</strong></td>
+            <td style="padding:6px; text-align:right; font-weight:bold;">{{ net_total|floatformat:2|intcomma }} Birr</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="padding:6px;"><strong>Amount in Words:</strong> {{ amount_in_words|title }} Birr</td>
+        </tr>
+    </table>
+
+    <div style="clear:both;"></div>
+
+    <!-- Signature -->
+    <div style="margin-top:50px; width:100%; text-align:left;"> 
+        <strong>For Company</strong><br><br>
+        <strong>Name: ______________________</strong><br>
+        Signatory: ______________________
+    </div>
+
+    <!-- Buttons -->
+    <div style="text-align:center; margin-top:30px;">
+        <button class="btn btn-primary" onclick="window.print()" style="padding:10px 20px; font-size:16px; border:none; background:#1a73e8; color:#fff; border-radius:5px;">Print</button>
+
+        <a href="{% url 'transactions:sales-list' %}" class="btn btn-secondary" style="padding:10px 20px; font-size:16px; border:none; background:#ccc; color:#000; border-radius:5px; text-decoration:none;">Go Back</a>
+        <!-- Export Buttons -->
+        <a href="{% url 'transactions:export-sale-excel' bill.billno %}" class="btn btn-success" style="padding:10px 20px; font-size:16px; border:none; background:#28a745; color:#fff; border-radius:5px; text-decoration:none;">Export Excel</a>
+        <a href="{% url 'transactions:export-sale-pdf' bill.billno %}" class="btn btn-danger" style="padding:10px 20px; font-size:16px; border:none; background:#dc3545; color:#fff; border-radius:5px; text-decoration:none;">Export PDF</a>
+        <a href="{% url 'transactions:export-sale-word' bill.billno %}" class="btn btn-info" style="padding:10px 20px; font-size:16px; border:none; background:#17a2b8; color:#fff; border-radius:5px; text-decoration:none;">Export Word</a>
+    </div>
+
+</div>
+{% endblock %}
